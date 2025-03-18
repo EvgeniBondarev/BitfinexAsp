@@ -2,6 +2,7 @@
 using BitfinexAsp.Models.JsonToModelConverter;
 using BitfinexAsp.Models.JsonToModelConverter.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace BitfinexAsp.ApiClients.Bitfinex.REST;
 
@@ -37,5 +38,19 @@ public class BitfinexClient
         string endpoint = BitfinexEndpoints.GetTicker(symbol);
         string jsonResponse = await _apiClient.SendRequestAsync(HttpMethod.Get, endpoint);
         return JsonConvert.DeserializeObject<Ticker>(jsonResponse, Converter.Settings);
+    }
+    
+    public async Task<Ticker> GetTickersAsync(string symbol)
+    {
+        string endpoint = BitfinexEndpoints.GetTickers(symbol);
+        string jsonResponse = await _apiClient.SendRequestAsync(HttpMethod.Get, endpoint);
+        JArray jsonArray = JsonConvert.DeserializeObject<JArray>(jsonResponse);
+
+        if (jsonArray != null && jsonArray.Count > 0)
+        {
+            JArray tickerData = new JArray(jsonArray[0].Skip(1));
+            return JsonConvert.DeserializeObject<Ticker>(tickerData.ToString(), Converter.Settings);
+        }
+        return new Ticker(); 
     }
 }

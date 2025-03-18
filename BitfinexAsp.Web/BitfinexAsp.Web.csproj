@@ -10,4 +10,8 @@
       <ProjectReference Include="..\BitfinexAsp.Application\BitfinexAsp.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Views\Wallet\" />
+    </ItemGroup>
+
 </Project>

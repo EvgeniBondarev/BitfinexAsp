@@ -1,0 +1,39 @@
+﻿@model BitfinexAsp.Web.ViewModelы.PortfolioViewModel
+
+<h2>Оригинальный портфель</h2>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Валюта</th>
+        <th>Баланс</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var asset in Model.OriginalPortfolio.Assets)
+    {
+        <tr>
+            <td>@asset.Currency</td>
+            <td>@asset.Amount.ToString("F6")</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h2>Общий баланс портфеля</h2>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Валюта</th>
+        <th>Баланс</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var asset in Model.ConvertedPortfolio.Assets)
+    {
+        <tr>
+            <td>@asset.Currency</td>
+            <td>@asset.Amount.ToString("F6")</td>
+        </tr>
+    }
+    </tbody>
+</table>

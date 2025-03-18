@@ -2,6 +2,9 @@ using BitfinexAsp.ApiClients;
 using BitfinexAsp.ApiClients.Bitfinex.REST;
 using BitfinexAsp.ApiClients.Connectors;
 using BitfinexAsp.ApiClients.Connectors.Implementation;
+using BitfinexAsp.Models;
+using BitfinexAsp.Services.CryptoConverter;
+using BitfinexAsp.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton<MainClient>();
 builder.Services.AddSingleton<BitfinexClient>();
 builder.Services.AddSingleton<ITestConnector, BitfinexConnector>();
+builder.Services.AddSingleton<ICryptoConverterService, CryptoConverterService>();
+
 
 var app = builder.Build();
 

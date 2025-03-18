@@ -29,4 +29,11 @@ public static class BitfinexEndpoints
     {
         return $"{BaseUrl}/ticker/{symbol}";
     }
+    
+    public static string GetTickers(string symbol)
+    {
+        return $"{BaseUrl}/tickers?symbols={symbol}";
+    }
+
+    public static string Rates = "https://api-pub.bitfinex.com/v2/tickers?symbols=ALL";
 }
