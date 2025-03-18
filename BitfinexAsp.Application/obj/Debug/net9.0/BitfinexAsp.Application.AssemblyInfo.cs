@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BitfinexAsp.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+978e686297da228825969421d1d0cd6e649e5801")]
 [assembly: System.Reflection.AssemblyProductAttribute("BitfinexAsp.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BitfinexAsp.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

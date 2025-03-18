@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container mt-4">
+    <h3>REST API</h3>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a href="@Url.Action("Trades", "Bitfinex", new { pair = "tBTCUSD", maxCount = 10 })" class="text-decoration-none">
+                Получение трейдов (trades)
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="@Url.Action("Candles", "Bitfinex", new { pair = "tBTCUSD", periodInSec = 60, count = 10 })" class="text-decoration-none">
+                Получение свечей (candles)
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="@Url.Action("Ticker", "Bitfinex", new { symbol = "tBTCUSD" })" class="text-decoration-none">
+                Получение информации о тикере (Ticker)
+            </a>
+        </li>
+    </ul>
+</div>

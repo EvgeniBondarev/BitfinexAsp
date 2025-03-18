@@ -1,0 +1,58 @@
+﻿@model IEnumerable<BitfinexAsp.Models.Candle>
+
+<h2>Свечи для @ViewBag.Pair</h2>
+
+<form method="get" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <label class="form-label">Пара</label>
+            <input type="text" name="pair" class="form-control" value="@ViewBag.Pair">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Период (сек)</label>
+            <input type="number" name="periodInSec" class="form-control" value="@ViewBag.PeriodInSec" placeholder="1m, 5m, 15m">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Количество</label>
+            <input type="number" name="count" class="form-control" value="@ViewBag.Count">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">От</label>
+            <input type="datetime-local" name="from" class="form-control" value="@(ViewBag.From?.ToString("yyyy-MM-ddTHH:mm"))">
+            </div>
+                 <div class="col-md-2">
+                        <label class="form-label">До</label>
+                        <input type="datetime-local" name="to" class="form-control" value="@(ViewBag.To?.ToString("yyyy-MM-ddTHH:mm"))">
+                 </div>
+            <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+        </div>
+   </div>
+</form>
+
+<table class="table">
+    
+    <thead>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.OpenTime)</th>
+        <th>@Html.DisplayNameFor(model => model.OpenPrice)</th>
+        <th>@Html.DisplayNameFor(model => model.ClosePrice)</th>
+        <th>@Html.DisplayNameFor(model => model.HighPrice)</th>
+        <th>@Html.DisplayNameFor(model => model.LowPrice)</th>
+        <th>@Html.DisplayNameFor(model => model.TotalVolume)</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var candle in Model)
+    {
+        <tr>
+            <td>@candle.OpenTime</td>
+            <td>@candle.OpenPrice</td>
+            <td>@candle.ClosePrice</td>
+            <td>@candle.HighPrice</td>
+            <td>@candle.LowPrice</td>
+            <td>@candle.TotalVolume</td>
+        </tr>
+    }
+    </tbody>
+</table>

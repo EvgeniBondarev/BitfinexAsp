@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\buildMultiTargeting\BitfinexAsp.Web.props" />
+</Project>

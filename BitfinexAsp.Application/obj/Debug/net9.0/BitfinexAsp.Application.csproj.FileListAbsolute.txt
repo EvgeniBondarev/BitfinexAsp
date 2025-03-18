@@ -1,0 +1,13 @@
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\bin\Debug\net9.0\BitfinexAsp.Application.deps.json
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\bin\Debug\net9.0\BitfinexAsp.Application.dll
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\bin\Debug\net9.0\BitfinexAsp.Application.pdb
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\BitfinexAsp.Application.csproj.AssemblyReference.cache
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\BitfinexAsp.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\BitfinexAsp.Application.AssemblyInfoInputs.cache
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\BitfinexAsp.Application.AssemblyInfo.cs
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\BitfinexAsp.Application.csproj.CoreCompileInputs.cache
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\BitfinexAsp.Application.sourcelink.json
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\BitfinexAsp.Application.dll
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\refint\BitfinexAsp.Application.dll
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\BitfinexAsp.Application.pdb
+D:\.NETProject\BitfinexAsp\BitfinexAsp.Application\obj\Debug\net9.0\ref\BitfinexAsp.Application.dll

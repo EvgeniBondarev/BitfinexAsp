@@ -1,0 +1,44 @@
+﻿@model IEnumerable<BitfinexAsp.Models.Trade>
+
+<h2>Сделки для @ViewBag.Pair</h2>
+
+<form method="get" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-4">
+            <label class="form-label">Пара</label>
+            <input type="text" name="pair" class="form-control" value="@ViewBag.Pair">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Максимальное количество</label>
+            <input type="number" name="maxCount" class="form-control" value="@ViewBag.MaxCount">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+        </div>
+    </div>
+</form>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>@Html.DisplayNameFor(model => model.Id)</th>
+        <th>@Html.DisplayNameFor(model => model.Time)</th>
+        <th>@Html.DisplayNameFor(model => model.Amount)</th>
+        <th>@Html.DisplayNameFor(model => model.Price)</th>
+        <th>@Html.DisplayNameFor(model => model.Side)</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var trade in Model)
+    {
+        <tr>
+            <td>@trade.Id</td>
+            <td>@trade.Time</td>
+            <td>@trade.Amount</td>
+            <td>@trade.Price</td>
+            <td>@trade.Side</td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,28 @@
+﻿@model BitfinexAsp.Models.JsonToModelConverter.Converters.Ticker
+
+<h2>Тикер для @ViewBag.Symbol</h2>
+
+<form method="get" class="mb-3">
+    <div class="row g-2">
+        <div class="col-md-6">
+            <label class="form-label">Символ</label>
+            <input type="text" name="symbol" class="form-control" value="@ViewBag.Symbol">
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+        </div>
+    </div>
+</form>
+
+<div>
+    <p><strong>@Html.DisplayNameFor(model => model.Bid):</strong> @Model.Bid</p>
+    <p><strong>@Html.DisplayNameFor(model => model.BidSize):</strong> @Model.BidSize</p>
+    <p><strong>@Html.DisplayNameFor(model => model.Ask):</strong> @Model.Ask</p>
+    <p><strong>@Html.DisplayNameFor(model => model.AskSize):</strong> @Model.AskSize</p>
+    <p><strong>@Html.DisplayNameFor(model => model.DailyChange):</strong> @Model.DailyChange</p>
+    <p><strong>@Html.DisplayNameFor(model => model.DailyChangeRelative):</strong> @Model.DailyChangeRelative%</p>
+    <p><strong>@Html.DisplayNameFor(model => model.LastPrice):</strong> @Model.LastPrice</p>
+    <p><strong>@Html.DisplayNameFor(model => model.Volume):</strong> @Model.Volume</p>
+    <p><strong>@Html.DisplayNameFor(model => model.High):</strong> @Model.High</p>
+    <p><strong>@Html.DisplayNameFor(model => model.Low):</strong> @Model.Low</p>
+</div>
