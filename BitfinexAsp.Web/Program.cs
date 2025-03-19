@@ -18,7 +18,8 @@ builder.Services.AddSingleton<MainClient>();
 builder.Services.AddSingleton<BitfinexClient>();
 builder.Services.AddSingleton<ITestConnector, BitfinexConnector>();
 builder.Services.AddSingleton<ICryptoConverterService, CryptoConverterService>();
-builder.Services.AddSingleton<BitfinexWebSocketClient>();
+builder.Services.AddSingleton<BitfinexWebSocketTradesClient>();
+builder.Services.AddSingleton<BitfinexWebSocketCandlesClient>();
 
 
 var app = builder.Build();

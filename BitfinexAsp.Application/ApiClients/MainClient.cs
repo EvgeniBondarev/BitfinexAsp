@@ -3,6 +3,9 @@ using System.Text.Json;
 
 namespace BitfinexAsp.ApiClients;
 
+/// <summary>
+/// Основной HTTP-клиент для отправки запросов к API.
+/// </summary>
 public class MainClient
 {
     private readonly IHttpClientFactory _httpClientFactory;

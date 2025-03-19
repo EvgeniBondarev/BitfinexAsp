@@ -5,6 +5,9 @@ using BitfinexAsp.Services.CryptoConverter.Models;
 
 namespace BitfinexAsp.Services.CryptoConverter;
 
+/// <summary>
+/// Сервис для конвертации криптовалютного портфеля между разными валютами.
+/// </summary>
 public class CryptoConverterService : ICryptoConverterService
 {
     private readonly BitfinexClient _bitfinexClient;

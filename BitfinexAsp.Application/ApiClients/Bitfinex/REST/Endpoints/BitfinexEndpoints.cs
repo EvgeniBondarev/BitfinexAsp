@@ -1,5 +1,8 @@
 ﻿namespace BitfinexAsp.ApiClients.Bitfinex.REST;
 
+/// <summary>
+/// API-эндпоинты для работы с Bitfinex
+/// </summary>
 public static class BitfinexEndpoints
 {
     public const string BaseUrl = "https://api-pub.bitfinex.com/v2";
@@ -35,5 +38,5 @@ public static class BitfinexEndpoints
         return $"{BaseUrl}/tickers?symbols={symbol}";
     }
 
-    public static string WebSockettradesUrl = "wss://api-pub.bitfinex.com/ws/2";
+    public static string WebSocketUrl = "wss://api-pub.bitfinex.com/ws/2";
 }

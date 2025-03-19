@@ -3,6 +3,9 @@
 namespace BitfinexAsp.Models.JsonToModelConverter;
 using Newtonsoft.Json;
 
+/// <summary>
+/// Класс, содержащий настройки сериализации JSON для API-конвертеров.
+/// </summary>
 public static class Converter
 {
     public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings

@@ -2,6 +2,9 @@
 
 namespace BitfinexAsp.Services.CryptoConverter.Models;
 
+/// <summary>
+/// Класс, представляющий расчет с указанием валюты и количества.
+/// </summary>
 public class CryptoAsset
 {
     public CurrencyType Currency { get; set; }

@@ -10,15 +10,21 @@ namespace BitfinexAsp.ApiClients.Connectors.Implementation;
 public class BitfinexConnector : ITestConnector
 {
     private readonly BitfinexClient _bitfinexClient;
-    private readonly BitfinexWebSocketClient _webSocketClient;
+    private readonly BitfinexWebSocketTradesClient _webSocketClient;
+    private readonly BitfinexWebSocketCandlesClient _webSocketCandlesClient;
     private readonly ConcurrentDictionary<string, bool> _subscriptions = new();
+    private readonly ConcurrentDictionary<string, bool> _subscriptions2 = new();
 
     public BitfinexConnector(BitfinexClient bitfinexClient,
-                             BitfinexWebSocketClient webSocketClient)
+                             BitfinexWebSocketTradesClient webSocketClient,
+                             BitfinexWebSocketCandlesClient webSocketCandlesClient)
     {
         _bitfinexClient = bitfinexClient;
         _webSocketClient = webSocketClient;
         _webSocketClient.OnTradeReceived += HandleTrade;
+        
+        _webSocketCandlesClient = webSocketCandlesClient;
+        _webSocketCandlesClient.OnCandleReceived += HandleCandle;
     }
     
     public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount)
@@ -57,15 +63,28 @@ public class BitfinexConnector : ITestConnector
 
     public event Action<Candle>? CandleSeriesProcessing;
 
-    public void SubscribeCandles(string pair, int periodInSec, long? count,
-                                DateTimeOffset? from = null, DateTimeOffset? to = null)
+    public void SubscribeCandles(string pair, int periodInSec, long? count, DateTimeOffset? from = null, DateTimeOffset? to = null)
     {
-        throw new NotImplementedException();
+        string key = $"trade:{TimeConvertor.ConvertSecondsToMinutes(periodInSec)}m:{pair}";
+
+        if (!_subscriptions2.ContainsKey(key))
+        {
+            _subscriptions2[key] = true;
+            _webSocketCandlesClient.SubscribeCandles(pair, periodInSec);
+        }
     }
 
     public void UnsubscribeCandles(string pair)
     {
-        throw new NotImplementedException();
+        string key = $"trade:*m:{pair}";
+        var keysToUnsubscribe = _subscriptions.Keys.Where(k => k.Contains(key)).ToList();
+
+        foreach (var k in keysToUnsubscribe)
+        {
+            _subscriptions2.TryRemove(k, out _);
+            int periodInSec = int.Parse(k.Split(':')[1].TrimEnd('m')) * 60;
+            _webSocketCandlesClient.UnsubscribeCandles(pair, periodInSec);
+        }
     }
     
     private void HandleTrade(Trade trade) // Возможно NewBuyTrade и NewSellTrade про другое
@@ -78,5 +97,9 @@ public class BitfinexConnector : ITestConnector
         {
             NewSellTrade?.Invoke(trade);
         }
+    }
+    private void HandleCandle(Candle candle)
+    {
+        CandleSeriesProcessing?.Invoke(candle);
     }
 }

@@ -6,23 +6,32 @@ using BitfinexAsp.Models;
 
 namespace BitfinexAsp.ApiClients.Bitfinex.WebSocket;
 
-public class BitfinexWebSocketClient
+public class BitfinexWebSocketTradesClient : IBitfinexWebSocketClient
 {
     private readonly ClientWebSocket _webSocket;
-    private readonly Uri _uri = new(BitfinexEndpoints.WebSockettradesUrl);
-    private int _channelId; // Идентификатор канала
+    private readonly Uri _uri = new(BitfinexEndpoints.WebSocketUrl);
+    private static string _startPair = "tBTCUSD";
+    private int _channelId; 
 
     public event Action<Trade> OnTradeReceived;
 
-    public BitfinexWebSocketClient()
+    public BitfinexWebSocketTradesClient()
     {
         _webSocket = new ClientWebSocket();
     }
+    
 
     public async Task ConnectAsync(string pair)
     {
         await _webSocket.ConnectAsync(_uri, CancellationToken.None);
         await SubscribeToTrades( pair);
+
+        _ = ReceiveMessagesAsync();
+    }
+    public async Task ConnectAsync()
+    {
+        await _webSocket.ConnectAsync(_uri, CancellationToken.None);
+        await SubscribeToTrades(_startPair);
 
         _ = ReceiveMessagesAsync();
     }
@@ -40,7 +49,7 @@ public class BitfinexWebSocketClient
         await _webSocket.SendAsync(Encoding.UTF8.GetBytes(jsonMessage), WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
-    private async Task ReceiveMessagesAsync()
+    public async Task ReceiveMessagesAsync()
     {
         var buffer = new byte[8192];
 

@@ -32,6 +32,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQml0ZmluZXhcVHJhZGVzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/.NETProject/BitfinexAsp/BitfinexAsp.Web/Views/Candles/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FuZGxlc1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/.NETProject/BitfinexAsp/BitfinexAsp.Web/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -46,6 +50,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [D:/.NETProject/BitfinexAsp/BitfinexAsp.Web/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/.NETProject/BitfinexAsp/BitfinexAsp.Web/Views/Shared/_CandlesTable.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9DYW5kbGVzVGFibGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/.NETProject/BitfinexAsp/BitfinexAsp.Web/Views/Shared/_TradesTable.cshtml]

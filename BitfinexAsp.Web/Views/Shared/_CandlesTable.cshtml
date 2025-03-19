@@ -1,0 +1,38 @@
+﻿@model IEnumerable<BitfinexAsp.Models.Candle>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Pair)</th>
+            <th>@Html.DisplayNameFor(model => model.OpenPrice)</th>
+            <th>@Html.DisplayNameFor(model => model.HighPrice)</th>
+            <th>@Html.DisplayNameFor(model => model.LowPrice)</th>
+            <th>@Html.DisplayNameFor(model => model.ClosePrice)</th>
+            <th>@Html.DisplayNameFor(model => model.TotalPrice)</th>
+            <th>@Html.DisplayNameFor(model => model.TotalVolume)</th>
+            <th>@Html.DisplayNameFor(model => model.OpenTime)</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var candle in Model)
+        {
+            <tr>
+                <td>@candle.Pair</td>
+                <td>@candle.OpenPrice</td>
+                <td>@candle.HighPrice</td>
+                <td>@candle.LowPrice</td>
+                <td>@candle.ClosePrice</td>
+                <td>@candle.TotalPrice</td>
+                <td>@candle.TotalVolume</td>
+                <td>@candle.OpenTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Загрузка...</p>
+}
