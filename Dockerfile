@@ -11,26 +11,22 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY ["OzonProductsApi.Persistence/OzonProductsApi.Persistence.csproj", "OzonProductsApi.Persistence/"]
-COPY ["OzonProductsApi.Application/OzonProductsApi.Application.csproj", "OzonProductsApi.Application/"]
-COPY ["OzonProductsApi.Web/OzonProductsApi.Web.csproj", "OzonProductsApi.Web/"]
-RUN dotnet restore "./OzonProductsApi.Web/OzonProductsApi.Web.csproj"
+COPY ["BitfinexAsp.Application/BitfinexAsp.Application.csproj", "BitfinexAsp.Application/"]
+COPY ["BitfinexAsp.Web/BitfinexAsp.Web.csproj", "BitfinexAsp.Web/"]
+
+RUN dotnet restore "./BitfinexAsp.Web/BitfinexAsp.Web.csproj"
 COPY . .
-WORKDIR "/src/OzonProductsApi.Web"
-RUN dotnet build "./OzonProductsApi.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/BitfinexAsp.Web"
+RUN dotnet build "./BitfinexAsp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этап публикации приложения
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./OzonProductsApi.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./BitfinexAsp.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # Финальный этап — готовый контейнер
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-# Копируем ozonCategoryTree.json в /app/Data/
-RUN mkdir -p /app/Data
-COPY --from=publish src/OzonProductsApi.Web/bin/Data/ozonCategoryTree.json /app/Data/ozonCategoryTree.json
-
-ENTRYPOINT ["dotnet", "OzonProductsApi.Web.dll"]
+ENTRYPOINT ["dotnet", "BitfinexAsp.Web.dll"]

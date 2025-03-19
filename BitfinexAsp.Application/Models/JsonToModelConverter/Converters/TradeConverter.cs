@@ -23,7 +23,7 @@ public class TradeConverter : JsonConverter
                 Time = DateTimeOffset.FromUnixTimeMilliseconds(item[1].Value<long>()),
                 Amount = item[2].Value<decimal>(),
                 Price = item[3].Value<decimal>(),
-                Side = item[2].Value<decimal>() > 0 ? "buy" : "sell"
+                Side = item[2].Value<decimal>() > 0 ? "buy" : "sell" 
             };
             trades.Add(trade);
         }

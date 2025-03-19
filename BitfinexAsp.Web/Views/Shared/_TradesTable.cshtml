@@ -1,0 +1,32 @@
+﻿@model IEnumerable<BitfinexAsp.Models.Trade>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>@Html.DisplayNameFor(model => model.Time)</th>
+            <th>@Html.DisplayNameFor(model => model.Amount)</th>
+            <th>@Html.DisplayNameFor(model => model.Price)</th>
+            <th>@Html.DisplayNameFor(model => model.Side)</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var trade in Model)
+        {
+            <tr>
+                <td>@trade.Id</td>
+                <td>@trade.Time</td>
+                <td>@trade.Amount</td>
+                <td>@trade.Price</td>
+                <td>@trade.Side</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Загрузка...</p>
+}

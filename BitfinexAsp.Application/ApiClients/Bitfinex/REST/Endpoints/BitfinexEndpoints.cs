@@ -35,5 +35,5 @@ public static class BitfinexEndpoints
         return $"{BaseUrl}/tickers?symbols={symbol}";
     }
 
-    public static string Rates = "https://api-pub.bitfinex.com/v2/tickers?symbols=ALL";
+    public static string WebSockettradesUrl = "wss://api-pub.bitfinex.com/ws/2";
 }

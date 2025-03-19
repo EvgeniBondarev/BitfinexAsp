@@ -1,4 +1,6 @@
-﻿using BitfinexAsp.ApiClients.Bitfinex.REST;
+﻿using System.Collections.Concurrent;
+using BitfinexAsp.ApiClients.Bitfinex.REST;
+using BitfinexAsp.ApiClients.Bitfinex.WebSocket;
 using BitfinexAsp.Models;
 using BitfinexAsp.Models.JsonToModelConverter.Converters;
 using BitfinexAsp.Utils;
@@ -7,13 +9,16 @@ namespace BitfinexAsp.ApiClients.Connectors.Implementation;
 
 public class BitfinexConnector : ITestConnector
 {
-    private readonly MainClient _apiClient;
     private readonly BitfinexClient _bitfinexClient;
+    private readonly BitfinexWebSocketClient _webSocketClient;
+    private readonly ConcurrentDictionary<string, bool> _subscriptions = new();
 
-    public BitfinexConnector(MainClient apiClient, BitfinexClient bitfinexClient)
+    public BitfinexConnector(BitfinexClient bitfinexClient,
+                             BitfinexWebSocketClient webSocketClient)
     {
-        _apiClient = apiClient;
         _bitfinexClient = bitfinexClient;
+        _webSocketClient = webSocketClient;
+        _webSocketClient.OnTradeReceived += HandleTrade;
     }
     
     public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount)
@@ -37,12 +42,17 @@ public class BitfinexConnector : ITestConnector
     public event Action<Trade>? NewSellTrade;
     public void SubscribeTrades(string pair, int maxCount = 100)
     {
-        throw new NotImplementedException();
+        if (_subscriptions.ContainsKey(pair)) return;
+        _subscriptions[pair] = true;
+        _ = _webSocketClient.ConnectAsync(pair);
     }
 
     public void UnsubscribeTrades(string pair)
     {
-        throw new NotImplementedException();
+        if (_subscriptions.TryRemove(pair, out _))
+        {
+            _ = _webSocketClient.DisconnectAsync();
+        }
     }
 
     public event Action<Candle>? CandleSeriesProcessing;
@@ -57,8 +67,16 @@ public class BitfinexConnector : ITestConnector
     {
         throw new NotImplementedException();
     }
-}
-public class HttpClientFactoryStub : IHttpClientFactory
-{
-    public HttpClient CreateClient(string name) => new HttpClient();
+    
+    private void HandleTrade(Trade trade) // Возможно NewBuyTrade и NewSellTrade про другое
+    {
+        if (trade.Side == "buy")
+        {
+            NewBuyTrade?.Invoke(trade);
+        }
+        else if (trade.Side == "sell")
+        {
+            NewSellTrade?.Invoke(trade);
+        }
+    }
 }

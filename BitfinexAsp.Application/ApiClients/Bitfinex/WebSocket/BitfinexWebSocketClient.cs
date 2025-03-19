@@ -1,174 +1,103 @@
-﻿namespace BitfinexAsp.ApiClients.Bitfinex.WebSocket;
-
-using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using BitfinexAsp.ApiClients.Bitfinex.REST;
+using BitfinexAsp.Models;
 
-public class BitfinexWebSocketClient : IDisposable
+namespace BitfinexAsp.ApiClients.Bitfinex.WebSocket;
+
+public class BitfinexWebSocketClient
 {
-    private const string WebSocketUrl = "wss://api-pub.bitfinex.com/ws/2";
-    private ClientWebSocket _webSocket;
-    private readonly Dictionary<int, string> _channelIdToPair = new Dictionary<int, string>();
-    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private readonly ClientWebSocket _webSocket;
+    private readonly Uri _uri = new(BitfinexEndpoints.WebSockettradesUrl);
+    private int _channelId; // Идентификатор канала
 
-    public event Action<Trade> NewBuyTrade;
-    public event Action<Trade> NewSellTrade;
+    public event Action<Trade> OnTradeReceived;
 
-    public async Task ConnectAsync()
+    public BitfinexWebSocketClient()
     {
         _webSocket = new ClientWebSocket();
-        await _webSocket.ConnectAsync(new Uri(WebSocketUrl), _cancellationTokenSource.Token);
-        Console.WriteLine("WebSocket connected.");
+    }
+
+    public async Task ConnectAsync(string pair)
+    {
+        await _webSocket.ConnectAsync(_uri, CancellationToken.None);
+        await SubscribeToTrades( pair);
+
         _ = ReceiveMessagesAsync();
     }
 
-    public async Task SubscribeTradesAsync(string pair, int maxCount = 100)
+    private async Task SubscribeToTrades(string symbol)
     {
-        var subscribeMessage = new
+        var message = new
         {
             @event = "subscribe",
             channel = "trades",
-            symbol = pair
+            symbol = symbol
         };
 
-        string jsonMessage = JsonConvert.SerializeObject(subscribeMessage);
-        byte[] buffer = Encoding.UTF8.GetBytes(jsonMessage);
-        await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
-        Console.WriteLine($"Subscribed to trades for {pair}.");
-    }
-
-    public async Task UnsubscribeTradesAsync(string pair)
-    {
-        var unsubscribeMessage = new
-        {
-            @event = "unsubscribe",
-            channel = "trades",
-            symbol = pair
-        };
-
-        string jsonMessage = JsonConvert.SerializeObject(unsubscribeMessage);
-        byte[] buffer = Encoding.UTF8.GetBytes(jsonMessage);
-        await _webSocket.SendAsync(new ArraySegment<byte>(buffer), WebSocketMessageType.Text, true, _cancellationTokenSource.Token);
-        Console.WriteLine($"Unsubscribed from trades for {pair}.");
+        string jsonMessage = JsonSerializer.Serialize(message);
+        await _webSocket.SendAsync(Encoding.UTF8.GetBytes(jsonMessage), WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
     private async Task ReceiveMessagesAsync()
     {
-        var buffer = new byte[1024 * 4];
+        var buffer = new byte[8192];
+
         while (_webSocket.State == WebSocketState.Open)
         {
-            try
+            var result = await _webSocket.ReceiveAsync(buffer, CancellationToken.None);
+            if (result.MessageType == WebSocketMessageType.Close)
             {
-                WebSocketReceiveResult result;
-                var message = new List<byte>();
-
-                do
-                {
-                    result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), _cancellationTokenSource.Token);
-                    message.AddRange(new ArraySegment<byte>(buffer, 0, result.Count));
-                } while (!result.EndOfMessage);
-
-                string messageString = Encoding.UTF8.GetString(message.ToArray());
-                Console.WriteLine($"Received message: {messageString}");
-                ProcessMessage(messageString);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error receiving message: {ex.Message}");
+                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by client", CancellationToken.None);
                 break;
             }
+
+            string json = Encoding.UTF8.GetString(buffer, 0, result.Count);
+            ParseMessage(json);
         }
     }
 
-    private void ProcessMessage(string message)
+    private void ParseMessage(string json)
     {
+        if (json.Contains("subscribed") || json.Contains("hb")) return;
+
         try
         {
-            var json = JToken.Parse(message);
+            var jsonArray = JsonSerializer.Deserialize<JsonElement[]>(json);
+            if (jsonArray == null || jsonArray.Length < 3) return;
 
-            // Обработка подписки
-            if (json["event"]?.ToString() == "subscribed")
-            {
-                int channelId = json["chanId"].ToObject<int>();
-                string pair = json["symbol"].ToString();
-                _channelIdToPair[channelId] = pair;
-                Console.WriteLine($"Subscribed to {pair} with channel ID {channelId}");
-                return;
-            }
+            int channelId = jsonArray[0].GetInt32(); 
+            string msgType = jsonArray[1].GetString();
 
-            // Обработка данных о сделках
-            if (json is JArray array && array.Count >= 2)
+            if (msgType == "te" || msgType == "tu")
             {
-                int channelId = array[0].ToObject<int>();
-                if (_channelIdToPair.TryGetValue(channelId, out string pair))
+                var tradeData = jsonArray[2];
+
+                if (tradeData.ValueKind == JsonValueKind.Array && tradeData.GetArrayLength() >= 4)
                 {
-                    if (array[1] is JArray snapshotOrUpdate)
+                    var trade = new Trade
                     {
-                        if (snapshotOrUpdate[0] is JArray) // Это снапшот
-                        {
-                            foreach (var tradeArray in snapshotOrUpdate)
-                            {
-                                ProcessTrade(tradeArray.ToObject<float[]>(), pair);
-                            }
-                        }
-                        else if (snapshotOrUpdate[1].ToString() == "te" || snapshotOrUpdate[1].ToString() == "tu") // Это обновление
-                        {
-                            ProcessTrade(snapshotOrUpdate[2].ToObject<float[]>(), pair);
-                        }
-                    }
+                        Id = tradeData[0].ToString(),
+                        Time = DateTimeOffset.FromUnixTimeMilliseconds(tradeData[1].GetInt64()),
+                        Amount = tradeData[2].GetDecimal(),
+                        Price = tradeData[3].GetDecimal(),
+                        Pair = "BTCUSD",
+                        Side = tradeData[2].GetDecimal() > 0 ? "buy" : "sell"
+                    };
+
+                    OnTradeReceived?.Invoke(trade);
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error processing message: {ex.Message}");
+            Console.WriteLine($"Ошибка парсинга сообщения: {ex.Message}");
         }
     }
 
-    private void ProcessTrade(float[] tradeData, string pair)
+    public async Task DisconnectAsync()
     {
-        try
-        {
-            var trade = new Trade
-            {
-                Id = (long)tradeData[0],
-                Time = DateTimeOffset.FromUnixTimeMilliseconds((long)tradeData[1]),
-                Amount = tradeData[2],
-                Price = tradeData[3],
-                Pair = pair
-            };
-
-            if (trade.Amount > 0)
-            {
-                NewBuyTrade?.Invoke(trade);
-            }
-            else
-            {
-                NewSellTrade?.Invoke(trade);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error processing trade: {ex.Message}");
-        }
+        await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client disconnecting", CancellationToken.None);
     }
-
-    public void Dispose()
-    {
-        _webSocket?.Dispose();
-        _cancellationTokenSource.Cancel();
-    }
-}
-public class Trade
-{
-    public long Id { get; set; }
-    public DateTimeOffset Time { get; set; }
-    public float Amount { get; set; }
-    public float Price { get; set; }
-    public string Pair { get; set; }
 }
